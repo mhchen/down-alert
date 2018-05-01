@@ -3,7 +3,10 @@
 const program = require('commander');
 const cron = require('node-cron');
 const request = require('request-promise-native');
+const inquirer = require('inquirer');
 const mailer = require('../mailer');
+
+const DEFAULT_CRON_FORMAT = '0 0 * * * *';
 
 const ensureRequiredOptions = (options) => {
   const { SENDGRID_PASSWORD, SENDGRID_USER } = process.env;
@@ -34,20 +37,21 @@ program
   .option('-f, --from <from>', 'Email address to send alerts from')
   .option('--send-test-email', 'Sends a test email to verify your email credentials')
   .usage('<url ...> [options]')
-  .action((...args) => {
+  .action(async (...args) => {
     const options = args.pop();
     const urls = args;
-    const { to, from } = options;
+    const { to, from, cronFormat = DEFAULT_CRON_FORMAT } = options;
 
     ensureRequiredOptions(options);
     const poll = () => {
-      console.log('polling sites');
+      console.log('Polling all sites');
       urls.forEach((url) => {
         request({
-          method: 'GET',
+          method: 'HEAD',
           uri: url,
           resolveWithFullResponse: true,
         }).then(({ statusCode }) => {
+          console.log(statusCode);
           if (statusCode < 200 || statusCode >= 300) {
             throw new Error(`Non-200 statusCode received from ${url}: ${statusCode}`);
           }
@@ -57,8 +61,28 @@ program
         });
       });
     };
+
+    const confirmMessage = `
+To: ${to}
+From: ${from}
+URLs: ${urls.join(',')}
+Cron format: ${cronFormat}
+Start polling with this information? `;
+    const { confirm } = await inquirer.prompt({
+      type: 'confirm',
+      name: 'confirm',
+      message: confirmMessage,
+    });
+    if (!confirm) {
+      return;
+    }
+
+    if (options.sendTestEmail) {
+      console.log('Sending test email');
+      await mailer.sendTestEmail(to, from);
+    }
+
     poll();
-    const cronFormat = options.cron || '0 0 * * * *';
     cron.schedule(cronFormat, poll);
   })
   .parse(process.argv);
