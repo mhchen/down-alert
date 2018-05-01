@@ -1,0 +1,68 @@
+#!/usr/bin/env node
+
+const program = require('commander');
+const cron = require('node-cron');
+const request = require('request-promise-native');
+const mailer = require('../mailer');
+
+const ensureRequiredOptions = (options) => {
+  const { SENDGRID_PASSWORD, SENDGRID_USER } = process.env;
+  const { to, from } = options;
+  const errors = [];
+  if (!to) {
+    errors.push('Missing --to option');
+  }
+  if (!from) {
+    errors.push('Missing --from option');
+  }
+  if (!SENDGRID_USER) {
+    errors.push('Missing env variable SENDGRID_USER');
+  }
+  if (!SENDGRID_PASSWORD) {
+    errors.push('Missing env variable SENDGRID_PASSWORD');
+  }
+  if (errors.length) {
+    errors.forEach(error => console.error(error));
+    program.help();
+    process.exit(-1);
+  }
+};
+
+program
+  .option('-c, --cron-format <cron>', 'Cron format (e.g. "* * * * *") of frequency to poll')
+  .option('-t, --to <to>', 'Email address to send alerts to')
+  .option('-f, --from <from>', 'Email address to send alerts from')
+  .option('--send-test-email', 'Sends a test email to verify your email credentials')
+  .usage('<url ...> [options]')
+  .action((...args) => {
+    const options = args.pop();
+    const urls = args;
+    const { to, from } = options;
+
+    ensureRequiredOptions(options);
+    const poll = () => {
+      console.log('polling sites');
+      urls.forEach((url) => {
+        request({
+          method: 'GET',
+          uri: url,
+          resolveWithFullResponse: true,
+        }).then(({ statusCode }) => {
+          if (statusCode < 200 || statusCode >= 300) {
+            throw new Error(`Non-200 statusCode received from ${url}: ${statusCode}`);
+          }
+        }).catch((err) => {
+          console.log(`${url} request unsuccessful, sending error alert`);
+          mailer.sendDownAlert(to, from, err.message);
+        });
+      });
+    };
+    poll();
+    const cronFormat = options.cron || '0 0 * * * *';
+    cron.schedule(cronFormat, poll);
+  })
+  .parse(process.argv);
+
+if (!program.args.length) {
+  program.help();
+}
