@@ -5,6 +5,9 @@
   "bin": {
     "down-alert": "./bin/down-alert"
   },
+  "engines": {
+    "node": ">=8.0"
+  },
   "author": "Mike Chen <mhchen@gmail.com>",
   "license": "MIT",
   "dependencies": {
