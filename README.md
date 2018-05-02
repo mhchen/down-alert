@@ -9,7 +9,9 @@ Down alert requires an [API Key](https://sendgrid.com/docs/Classroom/Send/How_Em
 
 ## Installation
 
-To be finished after publishing
+```
+$ npm i -g down-alert
+```
 
 ## Usage
 
