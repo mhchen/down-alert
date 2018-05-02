@@ -10,6 +10,10 @@
   },
   "author": "Mike Chen <mhchen@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mhchen/down-alert"
+  },
   "dependencies": {
     "commander": "^2.15.1",
     "inquirer": "^5.2.0",
