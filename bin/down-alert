@@ -9,7 +9,7 @@ const mailer = require('../mailer');
 const DEFAULT_CRON_FORMAT = '0 0 * * * *';
 
 const ensureRequiredOptions = (options) => {
-  const { SENDGRID_PASSWORD, SENDGRID_USER } = process.env;
+  const { SENDGRID_API_KEY } = process.env;
   const { to, from } = options;
   const errors = [];
   if (!to) {
@@ -18,11 +18,8 @@ const ensureRequiredOptions = (options) => {
   if (!from) {
     errors.push('Missing --from option');
   }
-  if (!SENDGRID_USER) {
-    errors.push('Missing env variable SENDGRID_USER');
-  }
-  if (!SENDGRID_PASSWORD) {
-    errors.push('Missing env variable SENDGRID_PASSWORD');
+  if (!SENDGRID_API_KEY) {
+    errors.push('Missing env variable SENDGRID_API_KEY');
   }
   if (errors.length) {
     errors.forEach(error => console.error(error));
@@ -51,7 +48,7 @@ program
           uri: url,
           resolveWithFullResponse: true,
         }).then(({ statusCode }) => {
-          console.log(statusCode);
+          console.log(`${url}: ${statusCode}`);
           if (statusCode < 200 || statusCode >= 300) {
             throw new Error(`Non-200 statusCode received from ${url}: ${statusCode}`);
           }

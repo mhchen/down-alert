@@ -1,15 +1,24 @@
-const mailer = require('./mailer');
 const { promisify } = require('util');
+const nodemailer = require('nodemailer');
+const transport = require('nodemailer-sendgrid-transport');
+
+const options = {
+  auth: {
+    api_key: process.env.SENDGRID_API_KEY,
+  },
+};
+
+const mailer = nodemailer.createTransport(transport(options));
 const sendMailAsync = promisify(mailer.sendMail.bind(mailer));
 
-const send = (email) => {
-  return sendMailAsync(email).catch((err) => {
+const send = email => (
+  sendMailAsync(email).catch((err) => {
     console.error(`Issue sending email
 Email: ${JSON.stringify(email, null, 2)}
 Error: ${err}`);
     throw err;
-  });
-};
+  })
+);
 
 
 const sendDownAlert = (to, from, body) => {
