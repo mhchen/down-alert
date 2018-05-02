@@ -25,13 +25,9 @@ To be finished after publishing
     -h, --help                output usage information
 ```
 
-`to` and `from` are required options.
+Down alert requires `to` and `from` options. The others are optional. It also requires a `SENDGRID_API_KEY` environment variable. See below for example usage.
 
-`down-alert` relies on [node-cron](https://github.com/kelektiv/node-cron) under the hood so the `cron-format` option uses the same cron patterns.
-
-`url`s must be final URLs (e.g. if they redirect, they will be noted as failures).
-
-`down-alert` also requires a `SENDGRID_API_KEY` environment variable.
+`down-alert` relies on [node-cron](https://github.com/kelektiv/node-cron) under the hood so the `cron-format` option uses the same cron patterns. 
 
 Example usage:
 
