@@ -29,7 +29,7 @@ const ensureRequiredOptions = (options) => {
 };
 
 program
-  .option('-c, --cron-format <cron>', 'Cron format (e.g. "* * * * *") of frequency to poll')
+  .option('-c, --cron-format <cron>', 'Cron format (e.g. "* * * * *") of frequency to poll. Defaults to 0 0 * * * * (hourly)')
   .option('-t, --to <to>', 'Email address to send alerts to')
   .option('-f, --from <from>', 'Email address to send alerts from')
   .option('--send-test-email', 'Sends a test email to verify your email credentials')
