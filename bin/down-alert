@@ -54,7 +54,7 @@ program
           }
         }).catch((err) => {
           console.log(`${url} request unsuccessful, sending error alert`);
-          mailer.sendDownAlert(to, from, err.message);
+          mailer.sendDownAlert(to, from, url, err.message);
         });
       });
     };
@@ -76,7 +76,7 @@ Start polling with this information? `;
 
     if (options.sendTestEmail) {
       console.log('Sending test email');
-      await mailer.sendTestEmail(to, from);
+      await mailer.sendTestEmail(to, from, urls);
     }
 
     poll();

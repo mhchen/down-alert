@@ -21,18 +21,18 @@ Error: ${err}`);
 );
 
 
-const sendDownAlert = (to, from, body) => {
+const sendDownAlert = (to, from, url, body) => {
   const email = {
     to,
     from,
-    subject: 'One of your sites is down',
+    subject: `[Down alert] ${url} is down`,
     text: body,
   };
   return send(email);
 };
 
-const sendTestEmail = (to, from) => {
-  const text = 'down-alert successfully polling your URLs';
+const sendTestEmail = (to, from, urls) => {
+  const text = `[Down alert] successfully polling URLs: ${urls.join(', ')}`;
   const email = {
     to,
     from,
