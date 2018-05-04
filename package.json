@@ -15,12 +15,14 @@
     "url": "https://github.com/mhchen/down-alert"
   },
   "dependencies": {
+    "colors": "^1.2.3",
     "commander": "^2.15.1",
     "inquirer": "^5.2.0",
     "node-cron": "^1.2.1",
     "nodemailer": "^4.6.4",
     "nodemailer-sendgrid-transport": "^0.2.0",
     "request": "^2.85.0",
-    "request-promise-native": "^1.0.5"
+    "request-promise-native": "^1.0.5",
+    "winston": "^3.0.0-rc5"
   }
 }

@@ -4,7 +4,11 @@ const program = require('commander');
 const cron = require('node-cron');
 const request = require('request-promise-native');
 const inquirer = require('inquirer');
+
+require('colors');
+
 const mailer = require('../mailer');
+const { createLogger } = require('../logger');
 
 const DEFAULT_CRON_FORMAT = '0 0 * * * *';
 
@@ -32,6 +36,9 @@ program
   .option('-c, --cron-format <cron>', 'Cron format (e.g. "* * * * *") of frequency to poll. Defaults to 0 0 * * * * (hourly)')
   .option('-t, --to <to>', 'Email address to send alerts to')
   .option('-f, --from <from>', 'Email address to send alerts from')
+  .option('-lf, --log-file <filename>', 'File to write logs messages to')
+  .option('-ll, --log-level <level>', 'Log level (e.g. debug, info, error)')
+  .option('-y, --yes', 'Skip confirmation prompt')
   .option('--send-test-email', 'Sends a test email to verify your email credentials')
   .usage('<url ...> [options]')
   .action(async (...args) => {
@@ -40,42 +47,46 @@ program
     const { to, from, cronFormat = DEFAULT_CRON_FORMAT } = options;
 
     ensureRequiredOptions(options);
+
+    const logger = createLogger(options);
     const poll = () => {
-      console.log('Polling all sites');
+      logger.info('Polling all sites');
       urls.forEach((url) => {
         request({
           method: 'HEAD',
           uri: url,
           resolveWithFullResponse: true,
         }).then(({ statusCode }) => {
-          console.log(`${url}: ${statusCode}`);
+          logger.info(`${url}: ${statusCode}`);
           if (statusCode < 200 || statusCode >= 300) {
             throw new Error(`Non-200 statusCode received from ${url}: ${statusCode}`);
           }
         }).catch((err) => {
-          console.log(`${url} request unsuccessful, sending error alert`);
+          logger.error(`${url} request unsuccessful, sending error alert`);
           mailer.sendDownAlert(to, from, url, err.message);
         });
       });
     };
 
-    const confirmMessage = `
-To: ${to}
-From: ${from}
-URLs: ${urls.join(',')}
-Cron format: ${cronFormat}
-Start polling with this information? `;
-    const { confirm } = await inquirer.prompt({
-      type: 'confirm',
-      name: 'confirm',
-      message: confirmMessage,
-    });
-    if (!confirm) {
-      return;
+    if (!options.yes) {
+      const confirmMessage = `To: ${to.cyan}
+  From: ${from.cyan}
+  URLs: ${urls.join(',').cyan}
+  Cron format: ${cronFormat.cyan}
+  Test email: ${(options.sendTestEmail ? 'Yes' : 'No').cyan}`;
+      console.log(confirmMessage);
+      const { confirm } = await inquirer.prompt({
+        type: 'confirm',
+        name: 'confirm',
+        message: 'Start polling with this information?',
+      });
+      if (!confirm) {
+        return;
+      }
     }
 
     if (options.sendTestEmail) {
-      console.log('Sending test email');
+      logger.info('Sending test email');
       await mailer.sendTestEmail(to, from, urls);
     }
 
