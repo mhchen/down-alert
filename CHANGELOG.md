@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.2.0
+* Update log-file shortcut
+* Remove log-level option
+
 ## 0.1.1
 * Fix indentation with confirmation message
 

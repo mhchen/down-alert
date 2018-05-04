@@ -20,14 +20,13 @@ $ npm i -g down-alert
 
   Options:
 
-    -c, --cron-format <cron>    Cron format (e.g. "* * * * *") of frequency to poll. Defaults to 0 0 * * * * (hourly)
-    -t, --to <to>               Email address to send alerts to
-    -f, --from <from>           Email address to send alerts from
-    -lf, --log-file <filename>  File to write logs messages to
-    -ll, --log-level <level>    Log level (e.g. debug, info, error)
-    -y, --yes                   Skip confirmation prompt
-    --send-test-email           Sends a test email to verify your email credentials
-    -h, --help                  output usage information
+    -c, --cron-format <cron>   Cron format (e.g. "* * * * *") of frequency to poll. Defaults to 0 0 * * * * (hourly)
+    -t, --to <to>              Email address to send alerts to
+    -f, --from <from>          Email address to send alerts from
+    -l, --log-file <filename>  File to write logs messages to
+    -y, --yes                  Skip confirmation prompt
+    --send-test-email          Sends a test email to verify your email credentials
+    -h, --help                 output usage information
 ```
 
 Down alert requires `to` and `from` options. The others are optional. It also requires a `SENDGRID_API_KEY` environment variable. See below for example usage.
