@@ -70,10 +70,10 @@ program
 
     if (!options.yes) {
       const confirmMessage = `To: ${to.cyan}
-  From: ${from.cyan}
-  URLs: ${urls.join(',').cyan}
-  Cron format: ${cronFormat.cyan}
-  Test email: ${(options.sendTestEmail ? 'Yes' : 'No').cyan}`;
+From: ${from.cyan}
+URLs: ${urls.join(',').cyan}
+Cron format: ${cronFormat.cyan}
+Test email: ${(options.sendTestEmail ? 'Yes' : 'No').cyan}`;
       console.log(confirmMessage);
       const { confirm } = await inquirer.prompt({
         type: 'confirm',

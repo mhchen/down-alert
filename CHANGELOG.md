@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.1.1
+* Fix indentation with confirmation message
+
 ## 0.1.0
 * Add logging timestamps
 * Add log-file option
