@@ -45,6 +45,5 @@ It's ideal to run this as a background task either using `screen` or `tmux`. It'
 ## TODO
 
 * Options to run as daemon
-* Add timestamps and granularity to logging
 * (Maybe) Allow non-Sendgrid transport (maybe `sendmail`)?
 * (Maybe) More user-friendly cron format
